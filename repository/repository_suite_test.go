@@ -28,7 +28,13 @@ func TestRepository(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	logrus.Info("BeforeSuite ")
+	logrus.Info("BeforeSuite Integration test")
+	Redis = setupRedisContainer()
+})
+
+var _ = AfterSuite(func() {
+	logrus.Info("AfterSuite Integration test")
+	Redis.Terminate()
 })
 
 func setupRedisContainer() ContainerAddress {
