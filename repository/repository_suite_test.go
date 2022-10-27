@@ -40,7 +40,7 @@ var _ = AfterSuite(func() {
 func setupRedisContainer() ContainerAddress {
 	ctx := context.Background()
 	redisContainerRequest := testcontainers.ContainerRequest{
-		Image:        "redis:6",
+		Image:        "redis:7.0.5",
 		ExposedPorts: []string{"6379/tcp"},
 		WaitingFor:   wait.ForLog("Ready to accept connections").WithStartupTimeout(time.Second * 300),
 	}
