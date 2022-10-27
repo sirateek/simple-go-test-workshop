@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 )
 
 type bookRepository struct {
@@ -35,11 +36,12 @@ func (b *bookRepository) GetBook(id int) (bookModel model.BookModel, err error) 
 	// Get Book From Cache.
 	cacheResult, err := b.cache.Get(fmt.Sprint("BOOK_", id)).Result()
 	if err == nil {
+		logrus.Info("Cache Hit!")
 		// Render cache and return
 		err = json.Unmarshal([]byte(cacheResult), &bookModel)
 		return bookModel, err
 	} else {
-		fmt.Println("Warning: Redis Error: ", err)
+		logrus.Warn("Warning: Redis Error: ", err)
 	}
 
 	// Cache Miss, Search from file.
@@ -64,7 +66,7 @@ func (b *bookRepository) GetBook(id int) (bookModel model.BookModel, err error) 
 			// Set JSON cache
 			_, err = b.cache.Set(fmt.Sprint("BOOK_", book.Id), string(jsonMarshal), 1*time.Hour).Result()
 			if err != nil {
-				fmt.Println("Warning Redis: Cache set Error: ", err)
+				logrus.Warn("Warning Redis: Cache set Error: ", err)
 			}
 		}
 
