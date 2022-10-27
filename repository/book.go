@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"test-go-workshop/cmd"
 	"test-go-workshop/model"
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/gocarina/gocsv"
 )
 
 type bookRepository struct {
@@ -37,6 +38,8 @@ func (b *bookRepository) GetBook(id int) (bookModel model.BookModel, err error) 
 		// Render cache and return
 		err = json.Unmarshal([]byte(cacheResult), &bookModel)
 		return bookModel, err
+	} else {
+		fmt.Println("Warning: Redis Error: ", err)
 	}
 
 	// Cache Miss, Search from file.
@@ -46,10 +49,13 @@ func (b *bookRepository) GetBook(id int) (bookModel model.BookModel, err error) 
 	}
 	defer in.Close()
 
-	bookData := []*model.BookModel{}
-	// TODO: Change to call ReadCSVFile
-	if err := gocsv.UnmarshalFile(in, &bookData); err != nil {
-		return bookModel, nil
+	bookStringData, _ := io.ReadAll(in)
+
+	// Read CSV by using our package.
+	bookData, err := cmd.ReadCSVFromString(string(bookStringData))
+	if err != nil {
+		// If error, return it to caller.
+		return bookModel, err
 	}
 
 	for _, book := range bookData {
@@ -58,7 +64,7 @@ func (b *bookRepository) GetBook(id int) (bookModel model.BookModel, err error) 
 			// Set JSON cache
 			_, err = b.cache.Set(fmt.Sprint("BOOK_", book.Id), string(jsonMarshal), 1*time.Hour).Result()
 			if err != nil {
-				fmt.Println("Cache set Error: ", err)
+				fmt.Println("Warning Redis: Cache set Error: ", err)
 			}
 		}
 

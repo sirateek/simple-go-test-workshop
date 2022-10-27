@@ -1,5 +1,5 @@
 run:
-	go run main.go
+	go run .
 
 start-dev-redis:
 	docker start test-redis || docker run --name test-redis -p 6379:6379 -d redis:7.0.5

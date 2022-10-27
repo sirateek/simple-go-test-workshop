@@ -12,6 +12,6 @@ func main() {
 
 	bookRepository := repository.NewBookRepository("/Users/sirateek/Repositories/Kaset/go/test-go-workshop/book.csv", redisClient)
 
-	result, err := bookRepository.GetBook(10)
+	result, err := bookRepository.GetBook(1)
 	fmt.Println("Book Result: ", result, "|| Err: ", err)
 }
