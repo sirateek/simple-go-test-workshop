@@ -1,7 +1,9 @@
 package repository_test
 
 import (
+	"encoding/json"
 	"fmt"
+	"test-go-workshop/model"
 	cache "test-go-workshop/pkg"
 	"test-go-workshop/repository"
 
@@ -24,14 +26,23 @@ var _ = Describe("Book Repository Test", Label("integration"), func() {
 
 		It("should set cache correctly if cache is not exists in the redis but exists in csv file", func() {
 			// Expect cache is not exists
+			_, err := redisClient.Get("BOOK_1").Result()
+			Expect(err).To(Equal(redis.Nil))
+			if 
 
 			// Call Repository
+			result, err := bookRepository.GetBook(1)
+			Expect(err).To(BeNil())
 
 			// Check cache
+			resultString, _ := redisClient.Get("BOOK_1").Result()
 
 			// Convert string to struct
+			var resultStruct model.BookModel
+			json.Unmarshal([]byte(resultString), &resultStruct)
 
 			// Expect the return data to be equal to
+			Expect(result).To(Equal(resultStruct))
 		})
 	})
 })
