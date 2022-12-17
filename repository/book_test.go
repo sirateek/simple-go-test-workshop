@@ -28,7 +28,6 @@ var _ = Describe("Book Repository Test", Label("integration"), func() {
 			// Expect cache is not exists
 			_, err := redisClient.Get("BOOK_1").Result()
 			Expect(err).To(Equal(redis.Nil))
-			if 
 
 			// Call Repository
 			result, err := bookRepository.GetBook(1)
